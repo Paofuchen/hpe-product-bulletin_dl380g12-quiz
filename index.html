@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[UT專題]HPE Product Bulletin-DL380 Gen12查規格小遊戲</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hpe-green:#01A982;--hpe-dark:#0D1117;--hpe-panel:#161C26;
+    --hpe-card:#1E2635;--hpe-border:#2A3550;--hpe-text:#C8D6E8;
+    --hpe-label:#7A90B0;--hpe-wrong:#E84A5F;--hpe-accent:#00D4FF;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--hpe-dark);color:var(--hpe-text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;
+    background-image:radial-gradient(ellipse 60% 40% at 80% 10%,rgba(1,169,130,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 30% at 10% 90%,rgba(0,212,255,.05) 0%,transparent 50%)}
+  .site-header{background:rgba(13,17,23,.95);border-bottom:1px solid var(--hpe-border);padding:14px 28px;
+    display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+  .logo-mark{width:34px;height:34px;background:var(--hpe-green);border-radius:6px;display:flex;align-items:center;
+    justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#000}
+  .header-title{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:#fff}
+  .header-title span{color:var(--hpe-green)}
+  .header-badge{margin-left:auto;background:var(--hpe-panel);border:1px solid var(--hpe-border);border-radius:20px;
+    padding:3px 12px;font-size:11px;color:var(--hpe-label);font-family:'Barlow Condensed',sans-serif;
+    letter-spacing:1px;text-transform:uppercase}
+  .container{max-width:820px;margin:0 auto;padding:36px 20px}
+  #register-screen{text-align:center;padding:48px 0}
+  .intro-chip{display:inline-block;background:rgba(1,169,130,.12);border:1px solid rgba(1,169,130,.3);
+    color:var(--hpe-green);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;
+    border-radius:20px;margin-bottom:20px;font-family:'Barlow Condensed',sans-serif}
+  .intro-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:800;
+    line-height:1.1;color:#fff;margin-bottom:12px}
+  .intro-title em{color:var(--hpe-green);font-style:normal}
+  .intro-sub{color:var(--hpe-label);font-size:14px;line-height:1.7;max-width:500px;margin:0 auto 28px}
+  .pool-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,255,.08);
+    border:1px solid rgba(0,212,255,.2);border-radius:20px;padding:6px 18px;font-size:13px;
+    color:var(--hpe-accent);margin-bottom:28px}
+  .pool-badge b{font-size:18px;font-weight:700}
+  .stat-row{display:flex;justify-content:center;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+  .stat-c{text-align:center}
+  .stat-n{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--hpe-green);line-height:1}
+  .stat-l{font-size:11px;color:var(--hpe-label);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  .reg-card{background:var(--hpe-card);border:1px solid var(--hpe-border);border-radius:12px;padding:28px;
+    max-width:440px;margin:0 auto 24px;text-align:left}
+  .reg-card label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--hpe-label);
+    font-family:'Barlow Condensed',sans-serif;margin-bottom:7px}
+  .reg-card input,.reg-card select{width:100%;background:var(--hpe-panel);border:1px solid var(--hpe-border);
+    border-radius:var(--radius);padding:11px 13px;color:#fff;font-size:14px;
+    font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;margin-bottom:16px}
+  .reg-card input:focus,.reg-card select:focus{border-color:var(--hpe-green)}
+  .reg-card select option{background:var(--hpe-panel)}
+  .btn-start{width:100%;background:var(--hpe-green);color:#000;border:none;padding:13px;border-radius:var(--radius);
+    font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:1px;
+    cursor:pointer;transition:all .2s;text-transform:uppercase}
+  .btn-start:hover{background:#02C99A}
+  .btn-start:disabled{opacity:.45;cursor:not-allowed}
+  #quiz-screen{display:none}
+  .progress-wrap{background:var(--hpe-panel);border:1px solid var(--hpe-border);border-radius:var(--radius);
+    padding:13px 18px;margin-bottom:22px;display:flex;align-items:center;gap:14px}
+  .prog-meta{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--hpe-label);white-space:nowrap}
+  .prog-meta span{color:var(--hpe-green);font-size:17px;font-weight:700}
+  .prog-track{flex:1;height:5px;background:var(--hpe-border);border-radius:3px;overflow:hidden}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--hpe-green),var(--hpe-accent));border-radius:3px;transition:width .4s}
+  .score-live{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--hpe-label);white-space:nowrap}
+  .score-live span{color:var(--hpe-accent);font-size:17px;font-weight:700}
+  /* seed badge */
+  .seed-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--hpe-label);
+    background:var(--hpe-panel);border:1px solid var(--hpe-border);border-radius:20px;
+    padding:2px 10px;white-space:nowrap;letter-spacing:.5px}
+  .q-card{background:var(--hpe-card);border:1px solid var(--hpe-border);border-radius:12px;padding:28px;
+    margin-bottom:16px;position:relative;overflow:hidden}
+  .q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--hpe-green),var(--hpe-accent))}
+  .q-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--hpe-green);margin-bottom:11px;display:block}
+  .q-text{font-size:16px;line-height:1.65;color:#fff;font-weight:500}
+  .q-cat{display:inline-flex;align-items:center;gap:5px;margin-top:10px;background:rgba(0,212,255,.08);
+    border:1px solid rgba(0,212,255,.2);border-radius:4px;padding:3px 10px;font-size:11px;
+    color:var(--hpe-accent);letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif}
+  .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+  @media(max-width:560px){.opts-grid{grid-template-columns:1fr}}
+  .opt-btn{background:var(--hpe-panel);border:1px solid var(--hpe-border);border-radius:var(--radius);
+    padding:13px 15px;text-align:left;cursor:pointer;color:var(--hpe-text);font-size:13.5px;
+    font-family:'Noto Sans TC',sans-serif;transition:all .18s;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+  .opt-btn:hover:not(:disabled){border-color:var(--hpe-green);background:rgba(1,169,130,.08);color:#fff}
+  .opt-key{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--hpe-green);
+    background:rgba(1,169,130,.12);border-radius:4px;min-width:23px;height:23px;display:flex;
+    align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .18s}
+  .opt-btn.correct{background:rgba(1,169,130,.15);border-color:var(--hpe-green);color:#fff}
+  .opt-btn.correct .opt-key{background:var(--hpe-green);color:#000}
+  .opt-btn.wrong{background:rgba(232,74,95,.1);border-color:var(--hpe-wrong);color:var(--hpe-label)}
+  .opt-btn.wrong .opt-key{background:var(--hpe-wrong);color:#fff}
+  .opt-btn:disabled{cursor:default}
+  .feedback-box{background:var(--hpe-panel);border-left:3px solid var(--hpe-green);
+    border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;font-size:13px;line-height:1.6;
+    color:var(--hpe-text);margin-bottom:16px;display:none}
+  .feedback-box.wrong-fb{border-color:var(--hpe-wrong)}
+  .feedback-box strong{color:var(--hpe-green)}
+  .feedback-box.wrong-fb strong{color:var(--hpe-wrong)}
+  .btn-next{background:transparent;border:1.5px solid var(--hpe-green);color:var(--hpe-green);
+    padding:10px 32px;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;
+    font-size:15px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;
+    transition:all .2s;display:none}
+  .btn-next:hover{background:var(--hpe-green);color:#000}
+  #result-screen{display:none;text-align:center;padding:40px 0}
+  .result-ring-wrap{position:relative;width:170px;height:170px;margin:0 auto 26px}
+  .result-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring-bg{fill:none;stroke:var(--hpe-border);stroke-width:10}
+  .ring-fill{fill:none;stroke:var(--hpe-green);stroke-width:10;stroke-linecap:round;
+    stroke-dasharray:471;stroke-dashoffset:471;transition:stroke-dashoffset 1.2s ease}
+  .result-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .result-pct{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:800;color:#fff;line-height:1}
+  .result-label{font-size:11px;color:var(--hpe-label);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+  .res-name-badge{display:inline-block;background:rgba(1,169,130,.12);border:1px solid rgba(1,169,130,.3);
+    border-radius:20px;padding:4px 14px;font-size:13px;color:var(--hpe-green);margin:10px 0}
+  .res-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px}
+  .res-msg{color:var(--hpe-label);font-size:14px;margin-bottom:26px;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto}
+  .result-stats{display:flex;justify-content:center;gap:18px;margin-bottom:26px;flex-wrap:wrap}
+  .r-stat{background:var(--hpe-card);border:1px solid var(--hpe-border);border-radius:var(--radius);padding:13px 22px;text-align:center}
+  .r-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800}
+  .r-stat-num.green{color:var(--hpe-green)}
+  .r-stat-num.red{color:var(--hpe-wrong)}
+  .r-stat-num.blue{color:var(--hpe-accent)}
+  .r-stat-label{font-size:11px;color:var(--hpe-label);margin-top:3px;text-transform:uppercase;letter-spacing:1px}
+  .submit-status{background:var(--hpe-card);border:1px solid var(--hpe-border);border-radius:var(--radius);
+    padding:13px 18px;font-size:13px;margin-bottom:22px;color:var(--hpe-label);display:flex;align-items:center;gap:10px;
+    max-width:400px;margin-left:auto;margin-right:auto}
+  .submit-dot{width:8px;height:8px;border-radius:50%;background:var(--hpe-label);flex-shrink:0}
+  .submit-dot.sending{background:var(--hpe-accent);animation:pulse 1s infinite}
+  .submit-dot.done{background:var(--hpe-green)}
+  .submit-dot.fail{background:var(--hpe-wrong)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .btn-retry{background:var(--hpe-green);color:#000;border:none;padding:11px 36px;border-radius:var(--radius);
+    font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;
+    cursor:pointer;text-transform:uppercase;transition:all .2s}
+  .btn-retry:hover{background:#02C99A}
+  .review-list{text-align:left;margin-top:34px}
+  .review-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--hpe-label);
+    letter-spacing:1px;text-transform:uppercase;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--hpe-border)}
+  .review-item{background:var(--hpe-card);border:1px solid var(--hpe-border);border-left:3px solid var(--hpe-wrong);
+    border-radius:var(--radius);padding:11px 13px;margin-bottom:8px;font-size:13px;line-height:1.6}
+  .rev-q{color:#fff;margin-bottom:4px;font-weight:500}
+  .rev-a{color:var(--hpe-label)}
+  .rev-a em{color:var(--hpe-green);font-style:normal}
+  .rev-a s{color:var(--hpe-wrong)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-mark">HPE</div>
+  <div class="header-title">[UT專題] <span>DL380 Gen12</span> 查規格小遊戲</div>
+  <div class="header-badge">題庫隨機抽題</div>
+</header>
+
+<div class="container">
+
+  <!-- REGISTER -->
+  <div id="register-screen">
+    <div class="intro-chip">Professional Certification Quiz</div>
+    <h1 class="intro-title">[UT專題] HPE Product Bulletin<br><em>DL380 Gen12</em><br>查規格小遊戲</h1>
+    <p class="intro-sub">每次測驗從題庫隨機抽取 20 題，題目順序與選項順序皆會重新排列，確保每次作答體驗不同。</p>
+
+    <div class="pool-badge">
+      題庫共 <b id="pool-count">35</b> 題　每次隨機抽 <b>20</b> 題
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-c"><div class="stat-n">20</div><div class="stat-l">每次題數</div></div>
+      <div class="stat-c"><div class="stat-n">8</div><div class="stat-l">主題分類</div></div>
+      <div class="stat-c"><div class="stat-n">隨機</div><div class="stat-l">每次不同</div></div>
+    </div>
+
+    <div class="reg-card">
+      <label>姓名 *</label>
+      <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
+      <label>部門</label>
+      <select id="inp-dept">
+        <option value="">請選擇部門</option>
+        <option value="行銷七部">行銷七部</option>
+        <option value="商用業務一部">商用業務一部</option>
+        <option value="商用業務五部">商用業務五部</option>
+        <option value="商用業務六部">商用業務六部</option>
+        <option value="商用業務七部">商用業務七部</option>
+        <option value="商用業務九部">商用業務九部</option>
+        <option value="專案協銷一部">專案協銷一部</option>
+        <option value="專案協銷三部">專案協銷三部</option>
+        <option value="新竹商用業務部">新竹商用業務部</option>
+        <option value="台中商用業務部">台中商用業務部</option>
+        <option value="台南商用業務部">台南商用業務部</option>
+        <option value="高雄商用業務部">高雄商用業務部</option>
+        <option value="技術支援一部">技術支援一部</option>
+        <option value="技術支援三部">技術支援三部</option>
+        <option value="經銷業務一部">經銷業務一部</option>
+        <option value="經銷業務三部">經銷業務三部</option>
+        <option value="新竹流通業務部">新竹流通業務部</option>
+        <option value="南區流通業務部">南區流通業務部</option>
+        <option value="流通業務一部">流通業務一部</option>
+        <option value="流通業務三部">流通業務三部</option>
+        <option value="流通業務七部">流通業務七部</option>
+        <option value="其他">其他</option>
+      </select>
+      <label>員編 *</label>
+      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="checkForm()">
+      <label>姓名 *</label>
+      <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
+      <label>角色</label>
+      <select id="inp-role">
+        <option value="業務">業務</option>
+        <option value="Presales">Presales</option>
+        <option value="Product Sales">Product Sales</option>
+        <option value="PM">PM</option>
+        <option value="工程師">工程師</option>
+      </select>
+      <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled>開始測驗（隨機 20 題）</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen">
+    <div class="progress-wrap">
+      <div class="prog-meta">題目 <span id="q-current">1</span> / 20</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="score-live">得分 <span id="score-live">0</span></div>
+      <div class="seed-badge" id="seed-badge"></div>
+    </div>
+    <div class="q-card">
+      <span class="q-tag" id="q-tag">QUESTION 01</span>
+      <p class="q-text" id="q-text"></p>
+      <div class="q-cat" id="q-cat"></div>
+    </div>
+    <div class="opts-grid" id="opts-grid"></div>
+    <div class="feedback-box" id="feedback-box"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">下一題 →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-screen">
+    <div class="result-ring-wrap">
+      <svg viewBox="0 0 170 170">
+        <circle class="ring-bg" cx="85" cy="85" r="75"/>
+        <circle class="ring-fill" id="result-ring" cx="85" cy="85" r="75"/>
+      </svg>
+      <div class="result-ring-text">
+        <div class="result-pct" id="result-pct">0%</div>
+        <div class="result-label">正確率</div>
+      </div>
+    </div>
+    <div class="res-name-badge" id="res-name-badge"></div>
+    <h2 class="res-title" id="res-title"></h2>
+    <p class="res-msg" id="res-msg"></p>
+    <div class="result-stats">
+      <div class="r-stat"><div class="r-stat-num green" id="r-correct">0</div><div class="r-stat-label">答對</div></div>
+      <div class="r-stat"><div class="r-stat-num red" id="r-wrong">0</div><div class="r-stat-label">答錯</div></div>
+      <div class="r-stat"><div class="r-stat-num blue">20</div><div class="r-stat-label">總題數</div></div>
+    </div>
+    <div class="submit-status">
+      <div class="submit-dot sending" id="submit-dot"></div>
+      <span id="submit-msg">正在將成績上傳至後台…</span>
+    </div>
+    <button class="btn-retry" onclick="resetQuiz()">再次測驗（新題組）</button>
+    <div class="review-list" id="review-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  ★ 替換為你的 Google Apps Script Web App URL
+// ═══════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+// ═══════════════════════════════════════════════
+
+// ───────────────────────────────────────────────
+//  題庫（35 題）— 可持續新增，格式不變
+// ───────────────────────────────────────────────
+const QUESTION_BANK = [
+  // ── 平台規格 ──
+  { cat:"平台規格", q:"HPE ProLiant Compute DL380 Gen12 的機架 Form Factor 為何？", opts:["1U Rack","2U Rack","4U Rack","Tower（可轉換）"], ans:1, explain:"DL380 Gen12 是標準 2U Rack 機架式伺服器，支援最多雙插槽 (2P) Intel Xeon 6 處理器。" },
+  { cat:"平台規格", q:"DL380 Gen12 最多支援幾顆實體 CPU？", opts:["1 顆","2 顆","4 顆","8 顆"], ans:1, explain:"DL380 Gen12 為雙插槽（2P）設計，最多安裝 2 顆 Intel Xeon 6 處理器。" },
+  { cat:"平台規格", q:"DL380 Gen12 前面板最多可配置幾個 PCIe Gen5 Hot-Plug NVMe SFF 硬碟槽？", opts:["8 個","12 個","16 個","24 個"], ans:3, explain:"SFF CTO 配置下，前面板最多支援 24 個 SFF（2.5\"）硬碟槽（含 NVMe/SAS/SATA）。" },
+
+  // ── 處理器 ──
+  { cat:"處理器", q:"DL380 Gen12 支援哪兩種 Intel Xeon 6 處理器核心架構？", opts:["Xeon 6 + Xeon 5 混搭","E-Core（效率核）與 P-Core（效能核）","AMD EPYC 9004 系列","Intel Xeon 4 第五代 Scalable"], ans:1, explain:"DL380 Gen12 同時支援 Intel Xeon 6 E-Core 與 P-Core，最高 144 Cores per 2-socket 系統。" },
+  { cat:"處理器", q:"Intel Xeon 6 E-Core（6700E 系列）的最大核心數為何？", opts:["64 cores","96 cores","128 cores","144 cores"], ans:3, explain:"Xeon 6 E-Core 最高型號可達 144 cores，適合高密度平行計算工作負載。" },
+  { cat:"處理器", q:"下列哪個 Xeon 6 系列主要針對高效能單執行緒工作負載？", opts:["Xeon 6700E（E-Core）","Xeon 6700P（P-Core）","Xeon 6500E（E-Core）","兩者效能相同"], ans:1, explain:"P-Core（Performance Core）設計偏重單執行緒效能，適合資料庫、ERP 等需要高 IPC 的應用。" },
+
+  // ── 記憶體 ──
+  { cat:"記憶體", q:"DL380 Gen12 在 1 DPC 條件下的最高 DDR5 速率為何？", opts:["4800 MT/s","5600 MT/s","6000 MT/s","6400 MT/s"], ans:3, explain:"DDR5 在 1 DPC（1 DIMM per Channel）條件下最高 6400 MT/s；每 CPU 16 個通道，全系統 32 槽，最高 8 TB。" },
+  { cat:"記憶體", q:"搭載 Intel Xeon 6700 E-Core 時，每顆 CPU 的 DIMM 數量限制為何？", opts:["1/2/4/8/12/16","1/2/4/8/16","1/4/8/16","2/4/8/16"], ans:1, explain:"Xeon 6700 E-Core 限制每 CPU DIMM 數為 1/2/4/8/16；P-Core（6500P/6700P）則支援 1/2/4/8/12/16。" },
+  { cat:"記憶體", q:"DL380 Gen12 雙 CPU 滿配記憶體最高支援多少容量？", opts:["2 TB","4 TB","6 TB","8 TB"], ans:3, explain:"每 CPU 16 槽 × 2 CPU = 32 槽，搭配 256GB RDIMM 可達 8 TB 總容量。" },
+  { cat:"記憶體", q:"DL380 Gen12 支援哪種記憶體標準？", opts:["DDR4 3200 MT/s","DDR5（最高 6400 MT/s）","LPDDR5X","HBM3"], ans:1, explain:"Gen12 採用 DDR5 記憶體，相較 Gen10/Gen10+ 的 DDR4 在頻寬與容量密度上均大幅提升。" },
+
+  // ── 儲存控制器 ──
+  { cat:"儲存控制器", q:"HPE MR408i-o Gen11 的快取大小與連接形式為何？", opts:["8GB Cache，PCIe 卡","4GB Cache，OCP 3.0 模組","2GB Cache，OCP 2.0","無快取，PCIe 卡"], ans:1, explain:"'o' 代表 OCP 3.0 模組形式，MR408i-o 配備 4GB Flash-Backed Write Cache，支援 RAID 0/1/10。" },
+  { cat:"儲存控制器", q:"下列哪個 HPE 儲存控制器支援完整 RAID 0/1/5/6/10/50/60？", opts:["HPE MR216i-o","HPE MR416i-o","HPE MR408i-o","HPE MR208i-o"], ans:1, explain:"MR416i-o/p 支援完整 RAID 0/1/10/5/50/6/60，具備 8GB 快取及 16 個 Tri-mode 通道。" },
+  { cat:"儲存控制器", q:"HPE MR416i-p 中 'p' 代表什麼連接形式？", opts:["OCP 3.0","PCIe Plug-in 卡","M.2 介面","U.2 直連"], ans:1, explain:"'p' 代表 PCIe Plug-in 卡形式，安裝於系統 PCIe 插槽；'o' 代表 OCP 3.0 模組，安裝於專屬 OCP 插槽。" },
+  { cat:"儲存控制器", q:"MR416i-o 的快取容量為何？", opts:["2GB","4GB","8GB","16GB"], ans:2, explain:"MR416i-o/p 具備 8GB Flash-Backed Write Cache，高於 MR408i 的 4GB，適合需要更大 I/O 緩衝的工作負載。" },
+
+  // ── 料號識別 ──
+  { cat:"料號識別", q:"下列哪個料號對應 SFF CTO Server 的 Universal Media Bay Kit？", opts:["P74738-B21","P74749-B21","P75741-B21","P48820-B21"], ans:1, explain:"P74749-B21 為 HPE DL3XX Gen12 SFF Universal Media Bay Kit，提供 ODD、Display Port 及 2x USB 3.2 Gen1，另支援 2 顆 SFF 硬碟。" },
+  { cat:"料號識別", q:"HPE NS204i-u V2 480GB NVMe Hot Plug Boot Optimized Storage Device 的料號為何？", opts:["P74755-B21","P74749-B21","P78279-B21","P75740-B21"], ans:2, explain:"P78279-B21 即 NS204i-u V2 480GB，可裝於後方、內部或前方 Cage，專用於 OS 開機，不做資料儲存。" },
+  { cat:"料號識別", q:"HPE DL3XX Gen12 8SFF x4 U.3 Tri-Mode Drive Cage Kit 的料號為何？", opts:["P74749-B21","P74738-B21","P75740-B21","P75741-B21"], ans:3, explain:"P75741-B21 為 8SFF x4 Tri-Mode（每顆 4 PCIe lanes）；P75740-B21 為 x1 Tri-Mode（1 lane/硬碟），速度較低。" },
+  { cat:"料號識別", q:"進氣溫度 30°C 環境應選擇哪個 Configuration Tracking 料號？", opts:["P79555-B21","P79552-B21","P79558-B21","P79564-B21"], ans:1, explain:"P79552-B21 = 30°C；P79555-B21 = 27°C；P79558-B21 = 25°C；P79561-B21 = 23°C；P79564-B21 = 20°C。" },
+  { cat:"料號識別", q:"料號 P89993-005 的 DL380 Gen12 BTO 機型主要搭載何種儲存配置？", opts:["Xeon 6517P + MR408i-o 8SFF","Xeon 6505P + MR416i-o 12LFF + 2x8TB HDD","Xeon 6530P + MR408i-o 8SFF","Xeon 6515P + MR416i-o 8SFF"], ans:1, explain:"P89993-005：Xeon 6505P 12c 1P、2x32GB-R、12LFF、MR416i-o、2x8TB SAS 7.2K、2x1000W PS，適合 LFF 大容量儲存。" },
+
+  // ── PCIe 與硬碟 ──
+  { cat:"PCIe 與儲存", q:"DL380 Gen12 Primary Riser (Box 4) 預設提供哪個規格的 PCIe 插槽？", opts:["PCIe Gen4 x16 Slot 1-3","PCIe Gen5 x16 Slot 1-3","PCIe Gen5 x8 Slot 1-6","PCIe Gen4 x8 Slot 1-4"], ans:1, explain:"Primary Riser (Box 4) 預設為 PCIe 5.0 Slot 1/2/3（x16）；全系統最多 6×16 PCIe Gen5 + 2 OCP Slot。" },
+  { cat:"PCIe 與儲存", q:"DL380 Gen12 EDSFF CTO Server 前方最多支援幾顆 EDSFF E3.S 硬碟？", opts:["12 顆","24 顆","36 顆","48 顆"], ans:2, explain:"EDSFF CTO 前方最多 36 顆 EDSFF E3.S；亦可選 12 EDSFF + 16 SFF 混合配置，後方另有最多 2 顆 SFF。" },
+  { cat:"PCIe 與儲存", q:"Tri-Mode 儲存控制器可同時支援哪三種硬碟介面？", opts:["SATA / SAS / NVMe（U.3）","SATA / SAS / FC","SAS / NVMe / Optane","SATA / NVMe / USB"], ans:0, explain:"Tri-Mode 控制器（如 MR416i）同時支援 SATA、SAS、NVMe（U.3）三種協定，一張卡可管理混合硬碟環境。" },
+
+  // ── 管理與安全 ──
+  { cat:"管理功能", q:"DL380 Gen12 搭載第幾代 iLO？前面板 Service Port 為何種介面？", opts:["iLO 6，RJ45","iLO 7，USB-C","iLO 6，USB-C","iLO 7，Micro-USB"], ans:1, explain:"Gen12 搭載 iLO 7，前面板為 USB-C iLO Service Port；後方為獨立 RJ45 iLO Management Port 用於遠端管理。" },
+  { cat:"管理功能", q:"HPE iLO 7 的 RESTful API 標準為何？", opts:["SNMP v3 + HPE REST","DMTF Redfish API","OpenAPI 3.0","IPMI 2.0 over LAN"], ans:1, explain:"iLO 7 RESTful API 為 DMTF Redfish 實作，支援標準化伺服器設定與自動化維護任務，可整合各種協調工具。" },
+  { cat:"管理功能", q:"HPE iLO 7 相較於 iLO 6 新增了哪項重要 AI 功能？", opts:["自動更新 BIOS","Predictive Failure Analysis（AI 預測故障）","自動申請 Care Pack","零信任網路閘道"], ans:1, explain:"iLO 7 新增 AI-driven Predictive Failure Analysis，可提前預測硬體潛在故障並主動告警，有助於預防性維護。" },
+  { cat:"安全性", q:"DL380 Gen12 從矽晶片層級建立韌體信任鏈的技術名稱為何？", opts:["TPM 2.0 Firmware","Intel TXT","HPE Silicon Root of Trust","AMD PSP"], ans:2, explain:"HPE Silicon Root of Trust 從矽晶片層級驗證韌體完整性，偵測惡意程式碼時阻止開機，搭配 CNSA 2.0 量子抗性演算法。" },
+  { cat:"安全性", q:"DL380 Gen12 的 UEFI 實作等級及其限制為何？", opts:["Class 2，支援 Legacy BIOS","Class 3，僅 UEFI Mode","Class 3，支援 Legacy+UEFI","Class 1，僅 Legacy BIOS"], ans:1, explain:"Gen12 為 UEFI Class 3，不支援 Legacy BIOS，啟用 Secure Boot、Secure Start 等安全功能，符合現代資安要求。" },
+  { cat:"安全性", q:"HPE Gen12 伺服器支援的量子抗性密碼演算法標準為何？", opts:["RSA-4096","CNSA 2.0（PQC）","AES-256 GCM","ECDSA P-521"], ans:1, explain:"Gen12 支援 CNSA 2.0（Commercial National Security Algorithm Suite 2.0），包含量子抗性（Post-Quantum Cryptography）演算法，為未來量子計算威脅做準備。" },
+
+  // ── 電源與散熱 ──
+  { cat:"電源與散熱", q:"DL380 Gen12 支援哪些 Flex Slot 電源規格？", opts:["500W/800W/1000W","800W/1000W/1600W/1800W-2200W","1000W/1600W/2000W","750W/1200W/1500W/2000W"], ans:1, explain:"支援 800W、1000W、1600W 及 1800W-2200W (M-CRPS) 四種規格，均為 1+1 Hot-Plug Redundant 熱插拔冗餘配置。" },
+  { cat:"電源與散熱", q:"DL380 Gen12 支援哪兩種主要散熱方式？", opts:["被動散熱 + Immersion","Air Cooling + Direct Liquid Cooling (DLC)","Air Cooling + Rear-Door HX","Air Cooling + Two-Phase Immersion"], ans:1, explain:"提供 Air Cooling（標準或 High Performance Fan Kit）及 DLC 兩種選項；DLC 需完整機架基礎架構並由 HPE Service 部署。" },
+  { cat:"電源與散熱", q:"HPE DL380 Gen12 的 Flex Slot 電源採用哪種冗餘架構？", opts:["N+N（2+2）","1+1 Hot-Plug Redundant","2N（全冗餘）","無冗餘單電源"], ans:1, explain:"Flex Slot 電源採 1+1 Hot-Plug Redundant 架構，支援熱插拔更換，任一 PSU 故障時系統不中斷運作。" },
+
+  // ── 保固服務 ──
+  { cat:"保固服務", q:"DL380 Gen12 標準保固「3/3/3」代表什麼？", opts:["3年零件/3年電話/3年軟更","3年零件/3年工時/3年到府","3年硬體/3年iLO/3年OS","3年標準/3年NBD/3年4hr"], ans:1, explain:"3/3/3 = 3年 Parts（零件）/ 3年 Labor（工時）/ 3年 Onsite（到府服務），是 HPE ProLiant 標準出廠保固。" },
+  { cat:"保固服務", q:"若客戶需要 4 小時到府服務回應，應加購哪類 HPE 服務？", opts:["HPE Foundation Care","HPE Pointnext Tech Care","HPE Care Pack（4hr Onsite）","HPE GreenLake"], ans:2, explain:"HPE Care Pack 提供多種 SLA 選項，4-hour Onsite Response 即為常見選購項目，可在標準 3/3/3 保固上升級服務等級。" },
+
+  // ── 網路 ──
+  { cat:"網路", q:"DL380 Gen12 的 OCP 3.0 網路插槽最多支援幾個？", opts:["1 個","2 個","3 個","4 個"], ans:1, explain:"DL380 Gen12 提供 2 個 OCP 3.0 插槽（Slot 7 與 Slot 8），分別對應 Primary 與 Secondary OCP NIC，支援 100GbE 以上頻寬。" },
+  { cat:"網路", q:"HPE OCP 3.0 網卡相較於 OCP 2.0 最主要的改進為何？", opts:["支援 Wi-Fi 6E","PCIe Gen5 介面、最高 400GbE 頻寬","支援 USB 3.2 直連","內建 TPM 晶片"], ans:1, explain:"OCP 3.0 採用 PCIe Gen5 介面，支援最高 400GbE 頻寬，並改善散熱設計；OCP 2.0 僅支援 PCIe Gen3/Gen4。" },
+  { cat:"網路", q:"DL380 Gen12 內建 iLO 7 管理網路埠的速率為何？", opts:["100 Mbps","1 GbE","10 GbE","25 GbE"], ans:1, explain:"iLO 7 內建 1 GbE 專屬管理網路埠（後方 RJ45），與資料網路完全隔離，確保帶外管理（OOB）安全性。" },
+
+  // ── GPU / 加速器 ──
+  { cat:"GPU 與加速器", q:"DL380 Gen12 最多可安裝幾張 雙寬 GPU 加速卡？", opts:["2 張","3 張","4 張","6 張"], ans:1, explain:"標準 2U 機箱搭配 GPU Riser 最多支援 3 張雙寬（Double-Wide）GPU，如 NVIDIA L40S 或 H100 PCIe，需搭配高功率 PSU。" },
+  { cat:"GPU 與加速器", q:"安裝 GPU 加速卡時，下列哪個條件必須確認？", opts:["需更換為 LFF 硬碟","需搭配 1600W 以上電源供應器","需移除所有 OCP 網卡","需升級為 4U 機箱"], ans:1, explain:"高功率 GPU（如 TDP 350W 以上）需搭配 1600W 或 2000W+ PSU，並確認機箱氣流與 CPU TDP 總功耗在 PSU 額定範圍內。" },
+
+  // ── OS 與虛擬化 ──
+  { cat:"OS 與虛擬化", q:"下列哪個作業系統在 DL380 Gen12 上獲得 HPE 官方認證支援？", opts:["Windows Server 2016 僅此版本","VMware vSphere、RHEL、Windows Server 2022 等多平台","僅支援 HPE Linux","僅支援 Ubuntu LTS"], ans:1, explain:"DL380 Gen12 支援 VMware vSphere 8.x、RHEL 9.x、SLES、Windows Server 2022/2025 等主流平台，詳見 HPE SPOCK 相容性查詢。" },
+  { cat:"OS 與虛擬化", q:"查詢 DL380 Gen12 作業系統與驅動程式相容性應使用哪個 HPE 工具？", opts:["HPE iLO Federation","HPE SPOCK（Single Point of Connectivity Knowledge）","HPE OneView Dashboard","HPE QuickSpecs Builder"], ans:1, explain:"HPE SPOCK（h17007.www1.hpe.com/storage/spock）是官方相容性查詢平台，涵蓋 OS、HBA、儲存陣列等完整支援矩陣。" },
+  { cat:"OS 與虛擬化", q:"DL380 Gen12 支援 VMware vSphere 的 vGPU 功能時，GPU 需符合哪項條件？", opts:["任何 PCIe GPU 均可","需支援 NVIDIA vGPU 授權（如 A 系列或 H 系列）","需搭配 AMD ROCm 驅動","僅限 HPE 原廠 GPU 選配"], ans:1, explain:"vGPU 功能需 GPU 支援 NVIDIA Virtual GPU 技術（如 A30、A100、H100），並購買 NVIDIA vGPU 授權，並非所有 GPU 均支援。" },
+
+  // ── 儲存進階 ──
+  { cat:"儲存控制器", q:"HPE Smart Array E208i-a SR Gen10 Plus 與 MR216i-o 最主要的差異為何？", opts:["E208i 支援 RAID 5，MR216i 不支援","MR216i 為 Gen11 新平台控制器，效能與功能均優於 E208i","E208i 支援 NVMe，MR216i 不支援","兩者完全相同，只是命名不同"], ans:1, explain:"MR216i-o 是 Gen11/Gen12 新一代控制器，採用 Tri-Mode 架構，整合 SATA/SAS/NVMe 支援；E208i 為舊世代，僅支援 SATA/SAS。" },
+  { cat:"PCIe 與儲存", q:"U.3 硬碟介面的主要優勢為何？", opts:["比 U.2 更便宜","單一實體連接器可切換 NVMe 或 SATA/SAS 協定（Tri-Mode）","支援熱插拔，U.2 不支援","傳輸速率為 U.2 的兩倍"], ans:1, explain:"U.3 採用與 U.2 相同的實體連接器，但支援協定切換（NVMe / SATA / SAS），讓 Tri-Mode 控制器可彈性管理不同類型硬碟。" },
+
+  // ── 系統管理進階 ──
+  { cat:"管理功能", q:"HPE OneView 對 DL380 Gen12 提供哪種層級的管理整合？", opts:["只能監控，不能設定","範本式設定（Server Profile）、韌體更新、健康狀態監控一體化管理","僅支援 iLO 基本監控","需額外購買 iLO Advanced 授權才能使用"], ans:1, explain:"HPE OneView 透過 Server Profile 範本統一管理 BIOS、NIC、儲存、韌體設定，並提供合規性稽核與自動化部署能力。" },
+  { cat:"管理功能", q:"HPE iLO 7 的 Integrated Remote Console（IRC）支援哪種連線協定？", opts:["僅 Java Applet","HTML5（無需安裝外掛）","僅 VNC","需安裝 HPE iLO Mobile App"], ans:1, explain:"iLO 7 的 IRC 採用 HTML5，無需安裝 Java 或任何外掛，可直接在現代瀏覽器中進行遠端 KVM 控制，相容性更佳。" },
+
+  // ── 料號進階 ──
+  { cat:"料號識別", q:"HPE DL380 Gen12 High Performance Fan Kit 主要用於哪種場景？", opts:["標準辦公室環境","高環境溫度（30°C 以上）或高功耗 GPU 配置","省電模式部署","只有 LFF 機型才需要"], ans:1, explain:"High Performance Fan Kit 提供更高風量，適用於高環境溫度機房、配置高 TDP GPU 或多顆大容量 NVMe 硬碟的高熱密度配置。" },
+  { cat:"料號識別", q:"DL380 Gen12 後方 2 顆 SFF 硬碟擴充 Cage 的主要用途為何？", opts:["僅用於備份裝置","可裝 NVMe/SAS/SATA 資料碟或 Boot Device，增加儲存彈性","只能安裝光碟機","僅支援 SATA SSD"], ans:1, explain:"後方 SFF Cage 支援 NVMe、SAS、SATA 規格，常見用途包含安裝 OS 開機碟（如 NS204i-u）或高速資料碟，不佔用前方硬碟槽位。" },
+
+  // ── 平台定位 ──
+  { cat:"平台規格", q:"DL380 Gen12 在 HPE ProLiant 產品線中屬於哪個定位？", opts:["入門級單路伺服器","主流雙路通用伺服器","高密度刀鋒伺服器","四路大型資料庫伺服器"], ans:1, explain:"DL380 是 HPE 最暢銷的主流雙路（2P）通用伺服器，適合虛擬化、資料庫、ERP、混合雲等多種工作負載，為業界標竿機型。" },
+  { cat:"安全性", q:"DL380 Gen12 的 Secure Boot 功能主要防範哪類威脅？", opts:["防止未授權的實體硬碟存取","阻止未經簽署的 UEFI 驅動程式與 OS Bootloader 執行","加密所有網路封包","防止 DDoS 攻擊"], ans:1, explain:"Secure Boot 在開機流程中驗證每個 UEFI 驅動程式與 Bootloader 的數位簽章，阻止惡意或未授權的程式碼在 OS 載入前執行。" },
+  { cat:"網路", q:"HPE DL380 Gen12 的 Embedded LAN on Motherboard（LOM）提供幾個 GbE 埠？", opts:["無內建 LOM，需另購 OCP NIC","1 個 1GbE","2 個 1GbE","4 個 1GbE"], ans:0, explain:"DL380 Gen12 不提供傳統 LOM，網路功能完全透過 OCP 3.0 插槽擴充，讓客戶依需求選擇 1GbE／10GbE／25GbE／100GbE 網卡，架構更彈性。" },
+];
+
+// ── 隨機工具 ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 每次 startQuiz 時從題庫隨機選 20 題，並把選項順序也隨機化
+function drawQuestions() {
+  const pool = shuffle(QUESTION_BANK).slice(0, 20);
+  return pool.map(q => {
+    // 把選項與正確答案索引一起打包後 shuffle
+    const indexed = q.opts.map((o, i) => ({ text: o, correct: i === q.ans }));
+    const shuffled = shuffle(indexed);
+    return {
+      cat: q.cat,
+      q: q.q,
+      opts: shuffled.map(x => x.text),
+      ans: shuffled.findIndex(x => x.correct),
+      explain: q.explain,
+    };
+  });
+}
+
+// ── 狀態 ──
+const KEYS = ['A','B','C','D'];
+let SESSION = [];    // 本次抽到的 20 題
+let currentQ = 0, score = 0, answered = false, wrongItems = [];
+let studentName = '', studentEmpId = '', studentDept = '', studentRole = '';
+let sessionSeed = '';  // 顯示用的 session ID
+
+document.getElementById('pool-count').textContent = QUESTION_BANK.length;
+
+function checkForm() {
+  const name = document.getElementById('inp-name').value.trim();
+  const empid = document.getElementById('inp-empid').value.trim();
+  document.getElementById('btn-start').disabled = name.length < 2 || empid.length < 1;
+}
+
+function startQuiz() {
+  studentName  = document.getElementById('inp-name').value.trim();
+  studentEmpId = document.getElementById('inp-empid').value.trim();
+  studentDept  = document.getElementById('inp-dept').value || '未選擇';
+  studentRole  = document.getElementById('inp-role').value;
+  SESSION = drawQuestions();
+  sessionSeed = 'SET-' + Date.now().toString(36).toUpperCase().slice(-5);
+  currentQ = 0; score = 0; wrongItems = [];
+  document.getElementById('register-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = SESSION[currentQ];
+  document.getElementById('q-current').textContent = currentQ + 1;
+  document.getElementById('prog-fill').style.width = ((currentQ / 20) * 100) + '%';
+  document.getElementById('score-live').textContent = score;
+  document.getElementById('q-tag').textContent = 'QUESTION ' + String(currentQ + 1).padStart(2, '0');
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-cat').textContent = '⬡ ' + q.cat;
+  document.getElementById('seed-badge').textContent = sessionSeed;
+
+  const grid = document.getElementById('opts-grid');
+  grid.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.onclick = () => selectAnswer(i);
+    btn.innerHTML = `<span class="opt-key">${KEYS[i]}</span><span>${opt}</span>`;
+    grid.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback-box');
+  fb.style.display = 'none'; fb.className = 'feedback-box';
+  document.getElementById('btn-next').style.display = 'none';
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = SESSION[currentQ];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[q.ans].classList.add('correct');
+
+  const fb = document.getElementById('feedback-box');
+  if (idx === q.ans) {
+    score++;
+    fb.className = 'feedback-box';
+    fb.innerHTML = `<strong>✓ 答對！</strong> ${q.explain}`;
+  } else {
+    btns[idx].classList.add('wrong');
+    fb.className = 'feedback-box wrong-fb';
+    fb.innerHTML = `<strong>✗ 答錯。</strong>正確答案：<strong>${KEYS[q.ans]}. ${q.opts[q.ans]}</strong>。<br>${q.explain}`;
+    wrongItems.push({ q: q.q, correct: q.opts[q.ans], picked: q.opts[idx] });
+  }
+  fb.style.display = 'block';
+  document.getElementById('score-live').textContent = score;
+  const btn = document.getElementById('btn-next');
+  btn.textContent = currentQ < 19 ? '下一題 →' : '查看成績';
+  btn.style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= 20) showResult();
+  else renderQuestion();
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  const pct = Math.round((score / 20) * 100);
+  document.getElementById('result-pct').textContent = pct + '%';
+  document.getElementById('r-correct').textContent = score;
+  document.getElementById('r-wrong').textContent = 20 - score;
+  document.getElementById('res-name-badge').textContent =
+    '👤 ' + studentName + (studentDept !== '未填寫' ? ' ／ ' + studentDept : '') + '　' + studentRole;
+
+  const ring = document.getElementById('result-ring');
+  setTimeout(() => { ring.style.strokeDashoffset = 471 - (pct / 100) * 471; }, 100);
+
+  const msgs = [
+    [90, '優秀！專業等級', `得分 ${score}/20（${pct}%）。已具備 DL380 Gen12 Pre-sales 工程師所需的深度技術知識，包含料號識別與規格比較能力。`],
+    [70, '良好！繼續加強', `得分 ${score}/20（${pct}%）。掌握多數核心規格，建議針對錯題再次複習 QuickSpecs 料號對應與詳細限制。`],
+    [50, '尚需努力',       `得分 ${score}/20（${pct}%）。建議重新研讀 HPE DL380 Gen12 QuickSpecs（a00073551enw），特別注意控制器料號章節。`],
+    [0,  '需要加強複習',   `得分 ${score}/20（${pct}%）。請重新閱讀完整 QuickSpecs，著重各 SKU 料號與規格對應關係。`],
+  ];
+  const m = msgs.find(x => pct >= x[0]);
+  if (pct < 50) ring.style.stroke = '#E84A5F';
+  else if (pct < 70) ring.style.stroke = '#F0A500';
+  document.getElementById('res-title').textContent = m[1];
+  document.getElementById('res-msg').textContent = m[2];
+
+  submitScore(score, pct);
+
+  const revList = document.getElementById('review-list');
+  if (wrongItems.length === 0) {
+    revList.innerHTML = '<div class="review-title">錯題檢討</div><p style="color:var(--hpe-green);font-size:14px;margin-top:10px">🎉 全部答對！</p>';
+  } else {
+    revList.innerHTML = `<div class="review-title">錯題檢討（${wrongItems.length} 題）</div>`;
+    wrongItems.forEach(w => {
+      revList.innerHTML += `<div class="review-item"><div class="rev-q">${w.q}</div><div class="rev-a">您的答案：<s>${w.picked}</s>　正確答案：<em>${w.correct}</em></div></div>`;
+    });
+  }
+}
+
+function submitScore(score, pct) {
+  const dot = document.getElementById('submit-dot');
+  const msg = document.getElementById('submit-msg');
+  const now = new Date();
+  const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const wrongStr = wrongItems.map(w => w.q.substring(0, 20) + '…').join(' | ') || '無';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
+      score, total: 20, pct, timestamp: ts,
+      wrong: wrongStr, session: sessionSeed,
+      pool_size: QUESTION_BANK.length
+    })
+  })
+  .then(r => r.json())
+  .then(() => {
+    dot.className = 'submit-dot done';
+    msg.textContent = '✓ 成績已成功上傳至後台';
+    msg.style.color = 'var(--hpe-green)';
+  })
+  .catch(() => {
+    dot.className = 'submit-dot fail';
+    msg.textContent = '⚠ 網路異常，成績未能上傳（請通知主辦人）';
+    msg.style.color = 'var(--hpe-wrong)';
+  });
+}
+
+function resetQuiz() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('register-screen').style.display = 'block';
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-empid').value = '';
+  document.getElementById('inp-dept').selectedIndex = 0;
+  document.getElementById('inp-role').selectedIndex = 0;
+  document.getElementById('btn-start').disabled = true;
+  const ring = document.getElementById('result-ring');
+  ring.style.strokeDashoffset = '471';
+  ring.style.stroke = 'var(--hpe-green)';
+}
+</script>
+</body>
+</html>
