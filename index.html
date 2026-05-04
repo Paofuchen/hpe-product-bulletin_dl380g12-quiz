@@ -474,7 +474,7 @@ function nextQuestion() {
 function showResult() {
   document.getElementById('quiz-screen').style.display = 'none';
   document.getElementById('result-screen').style.display = 'block';
-  const pct = Math.round((score / 20) * 100);
+  const pct = Math.round((score / SESSION.length) * 100);
   document.getElementById('result-pct').textContent = pct + '%';
   document.getElementById('r-correct').textContent = score;
   document.getElementById('r-wrong').textContent = 20 - score;
@@ -519,7 +519,7 @@ function submitScore(score, pct) {
   const params = new URLSearchParams({
     name: studentName, empid: studentEmpId.toUpperCase(), dept: studentDept, role: studentRole,
     subject: "[UT專題] HPE Product Bulletin DL380 Gen12 查規格小遊戲",
-    score: score, total: 20, pct: pct, timestamp: ts,
+    score: score, total: SESSION.length, pct: pct, timestamp: ts,
     wrong: wrongStr, session: sessionSeed,
     pool_size: QUESTION_BANK.length
   });
