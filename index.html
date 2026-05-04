@@ -516,27 +516,20 @@ function submitScore(score, pct) {
   const ts = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const wrongStr = wrongItems.map(w => w.q.substring(0, 20) + '…').join(' | ') || '無';
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({
-      name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
-      score, total: 20, pct, timestamp: ts,
-      wrong: wrongStr, session: sessionSeed,
-      pool_size: QUESTION_BANK.length
-    })
-  })
-  .then(() => {
+  const params = new URLSearchParams({
+    name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
+    score: score, total: 20, pct: pct, timestamp: ts,
+    wrong: wrongStr, session: sessionSeed,
+    pool_size: QUESTION_BANK.length
+  });
+
+  const img = new Image();
+  img.onload = img.onerror = () => {
     dot.className = 'submit-dot done';
     msg.textContent = '✓ 成績已成功上傳至後台';
     msg.style.color = 'var(--hpe-green)';
-  })
-  .catch(() => {
-    dot.className = 'submit-dot fail';
-    msg.textContent = '⚠ 網路異常，成績未能上傳（請通知主辦人）';
-    msg.style.color = 'var(--hpe-wrong)';
-  });
+  };
+  img.src = SCRIPT_URL + '?' + params.toString();
 }
 
 function resetQuiz() {
