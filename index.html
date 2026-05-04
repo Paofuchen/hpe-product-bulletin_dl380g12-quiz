@@ -517,7 +517,7 @@ function submitScore(score, pct) {
   const wrongStr = wrongItems.map(w => w.q.substring(0, 20) + '…').join(' | ') || '無';
 
   const params = new URLSearchParams({
-    name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
+    name: studentName, empid: studentEmpId.toUpperCase(), dept: studentDept, role: studentRole,
     score: score, total: 20, pct: pct, timestamp: ts,
     wrong: wrongStr, session: sessionSeed,
     pool_size: QUESTION_BANK.length
