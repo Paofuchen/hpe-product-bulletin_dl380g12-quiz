@@ -518,6 +518,7 @@ function submitScore(score, pct) {
 
   fetch(SCRIPT_URL, {
     method: 'POST',
+    mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
       name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
@@ -526,7 +527,6 @@ function submitScore(score, pct) {
       pool_size: QUESTION_BANK.length
     })
   })
-  .then(r => r.json())
   .then(() => {
     dot.className = 'submit-dot done';
     msg.textContent = '✓ 成績已成功上傳至後台';
