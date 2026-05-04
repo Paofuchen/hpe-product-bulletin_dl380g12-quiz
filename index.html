@@ -176,15 +176,43 @@
     <div class="reg-card">
       <label>姓名 *</label>
       <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
-      <label>部門 / 單位</label>
-      <input type="text" id="inp-dept" placeholder="例：業務一部、技術支援" maxlength="30">
+      <label>部門</label>
+      <select id="inp-dept">
+        <option value="">請選擇部門</option>
+        <option value="行銷七部">行銷七部</option>
+        <option value="商用業務一部">商用業務一部</option>
+        <option value="商用業務五部">商用業務五部</option>
+        <option value="商用業務六部">商用業務六部</option>
+        <option value="商用業務七部">商用業務七部</option>
+        <option value="商用業務九部">商用業務九部</option>
+        <option value="專案協銷一部">專案協銷一部</option>
+        <option value="專案協銷三部">專案協銷三部</option>
+        <option value="新竹商用業務部">新竹商用業務部</option>
+        <option value="台中商用業務部">台中商用業務部</option>
+        <option value="台南商用業務部">台南商用業務部</option>
+        <option value="高雄商用業務部">高雄商用業務部</option>
+        <option value="技術支援一部">技術支援一部</option>
+        <option value="技術支援三部">技術支援三部</option>
+        <option value="經銷業務一部">經銷業務一部</option>
+        <option value="經銷業務三部">經銷業務三部</option>
+        <option value="新竹流通業務部">新竹流通業務部</option>
+        <option value="南區流通業務部">南區流通業務部</option>
+        <option value="流通業務一部">流通業務一部</option>
+        <option value="流通業務三部">流通業務三部</option>
+        <option value="流通業務七部">流通業務七部</option>
+        <option value="其他">其他</option>
+      </select>
+      <label>員編 *</label>
+      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="checkForm()">
+      <label>姓名 *</label>
+      <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
       <label>角色</label>
       <select id="inp-role">
-        <option value="Pre-sales">Pre-sales 工程師</option>
-        <option value="Sales">業務</option>
-        <option value="Technical">Technical 工程師</option>
-        <option value="Manager">主管</option>
-        <option value="Other">其他</option>
+        <option value="業務">業務</option>
+        <option value="Presales">Presales</option>
+        <option value="Product Sales">Product Sales</option>
+        <option value="PM">PM</option>
+        <option value="工程師">工程師</option>
       </select>
       <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled>開始測驗（隨機 20 題）</button>
     </div>
@@ -363,20 +391,22 @@ function drawQuestions() {
 const KEYS = ['A','B','C','D'];
 let SESSION = [];    // 本次抽到的 20 題
 let currentQ = 0, score = 0, answered = false, wrongItems = [];
-let studentName = '', studentDept = '', studentRole = '';
+let studentName = '', studentEmpId = '', studentDept = '', studentRole = '';
 let sessionSeed = '';  // 顯示用的 session ID
 
 document.getElementById('pool-count').textContent = QUESTION_BANK.length;
 
 function checkForm() {
-  document.getElementById('btn-start').disabled =
-    document.getElementById('inp-name').value.trim().length < 2;
+  const name = document.getElementById('inp-name').value.trim();
+  const empid = document.getElementById('inp-empid').value.trim();
+  document.getElementById('btn-start').disabled = name.length < 2 || empid.length < 1;
 }
 
 function startQuiz() {
-  studentName = document.getElementById('inp-name').value.trim();
-  studentDept = document.getElementById('inp-dept').value.trim() || '未填寫';
-  studentRole = document.getElementById('inp-role').value;
+  studentName  = document.getElementById('inp-name').value.trim();
+  studentEmpId = document.getElementById('inp-empid').value.trim();
+  studentDept  = document.getElementById('inp-dept').value || '未選擇';
+  studentRole  = document.getElementById('inp-role').value;
   SESSION = drawQuestions();
   sessionSeed = 'SET-' + Date.now().toString(36).toUpperCase().slice(-5);
   currentQ = 0; score = 0; wrongItems = [];
@@ -492,7 +522,7 @@ function submitScore(score, pct) {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
-      name: studentName, dept: studentDept, role: studentRole,
+      name: studentName, empid: studentEmpId, dept: studentDept, role: studentRole,
       score, total: 20, pct, timestamp: ts,
       wrong: wrongStr, session: sessionSeed,
       pool_size: QUESTION_BANK.length
@@ -515,7 +545,8 @@ function resetQuiz() {
   document.getElementById('result-screen').style.display = 'none';
   document.getElementById('register-screen').style.display = 'block';
   document.getElementById('inp-name').value = '';
-  document.getElementById('inp-dept').value = '';
+  document.getElementById('inp-empid').value = '';
+  document.getElementById('inp-dept').selectedIndex = 0;
   document.getElementById('inp-role').selectedIndex = 0;
   document.getElementById('btn-start').disabled = true;
   const ring = document.getElementById('result-ring');
