@@ -203,7 +203,7 @@
         <option value="其他">其他</option>
       </select>
       <label>員編 *</label>
-      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="checkForm()">
+      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="this.value=this.value.toUpperCase();checkForm()">
       <label>角色</label>
       <select id="inp-role">
         <option value="業務">業務</option>
