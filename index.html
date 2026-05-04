@@ -268,7 +268,7 @@
 // ═══════════════════════════════════════════════
 //  ★ 替換為你的 Google Apps Script Web App URL
 // ═══════════════════════════════════════════════
-const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYaF75dYikWARZuN5Iv63A49RUnWlif2AdX9zeXUyTDSBl7xPSEOHVWUV9kU0q61J5/exec";
 // ═══════════════════════════════════════════════
 
 // ───────────────────────────────────────────────
@@ -524,10 +524,15 @@ function submitScore(score, pct) {
   });
 
   const img = new Image();
-  img.onload = img.onerror = () => {
+  img.onload = () => {
     dot.className = 'submit-dot done';
     msg.textContent = '✓ 成績已成功上傳至後台';
     msg.style.color = 'var(--hpe-green)';
+  };
+  img.onerror = () => {
+    dot.className = 'submit-dot fail';
+    msg.textContent = '⚠ 上傳失敗，請截圖回報管理員';
+    msg.style.color = 'var(--hpe-wrong)';
   };
   img.src = SCRIPT_URL + '?' + params.toString();
 }
