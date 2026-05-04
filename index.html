@@ -523,18 +523,17 @@ function submitScore(score, pct) {
     pool_size: QUESTION_BANK.length
   });
 
-  const img = new Image();
-  img.onload = () => {
-    dot.className = 'submit-dot done';
-    msg.textContent = '✓ 成績已成功上傳至後台';
-    msg.style.color = 'var(--hpe-green)';
-  };
-  img.onerror = () => {
-    dot.className = 'submit-dot fail';
-    msg.textContent = '⚠ 上傳失敗，請截圖回報管理員';
-    msg.style.color = 'var(--hpe-wrong)';
-  };
-  img.src = SCRIPT_URL + '?' + params.toString();
+  fetch(SCRIPT_URL + '?' + params.toString(), { mode: 'no-cors' })
+    .then(() => {
+      dot.className = 'submit-dot done';
+      msg.textContent = '✓ 成績已成功上傳至後台';
+      msg.style.color = 'var(--hpe-green)';
+    })
+    .catch(() => {
+      dot.className = 'submit-dot fail';
+      msg.textContent = '⚠ 上傳失敗，請截圖回報管理員';
+      msg.style.color = 'var(--hpe-wrong)';
+    });
 }
 
 function resetQuiz() {
