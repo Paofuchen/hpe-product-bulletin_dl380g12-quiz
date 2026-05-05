@@ -208,7 +208,7 @@
         <option value="其他">其他</option>
       </select>
       <label>員編 *</label>
-      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="checkForm()">
+      <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="this.value=this.value.toUpperCase();checkForm()" style="text-transform:uppercase;">
       <label>姓名 *</label>
       <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
       <label>角色</label>
