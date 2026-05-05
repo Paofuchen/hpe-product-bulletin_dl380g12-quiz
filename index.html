@@ -179,8 +179,8 @@
     <div class="reg-card">
       <label>姓名 *</label>
       <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
-      <label>部門</label>
-      <select id="inp-dept">
+      <label>部門 *</label>
+      <select id="inp-dept" onchange="checkForm()">
         <option value="">請選擇部門</option>
         <option value="行銷七部">行銷七部</option>
         <option value="行銷一部">行銷一部</option>
@@ -209,17 +209,15 @@
       </select>
       <label>員編 *</label>
       <input type="text" id="inp-empid" placeholder="請輸入員工編號" maxlength="20" oninput="this.value=this.value.toUpperCase();checkForm()" style="text-transform:uppercase;">
-      <label>姓名 *</label>
-      <input type="text" id="inp-name" placeholder="請輸入真實姓名" maxlength="20" oninput="checkForm()">
-      <label>角色</label>
-      <select id="inp-role">
+      <label>角色 *</label>
+      <select id="inp-role" onchange="checkForm()">
+        <option value="">請選擇角色</option>
         <option value="業務">業務</option>
         <option value="Presales">Presales</option>
         <option value="Product Sales">Product Sales</option>
         <option value="PM">PM</option>
         <option value="工程師">工程師</option>
-      </select>
-      <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled>開始測驗（隨機 20 題）</button>
+        <option value="其他">其他</option> id="btn-start" onclick="startQuiz()" disabled>開始測驗（隨機 20 題）</button>
     </div>
   </div>
 
@@ -414,9 +412,12 @@ let sessionSeed = '';  // 顯示用的 session ID
 document.getElementById('pool-count').textContent = QUESTION_BANK.length;
 
 function checkForm() {
-  const name = document.getElementById('inp-name').value.trim();
+  const name  = document.getElementById('inp-name').value.trim();
+  const dept  = document.getElementById('inp-dept').value;
   const empid = document.getElementById('inp-empid').value.trim();
-  document.getElementById('btn-start').disabled = name.length < 2 || empid.length < 1;
+  const role  = document.getElementById('inp-role').value;
+  document.getElementById('btn-start').disabled =
+    name.length < 2 || !dept || empid.length < 1 || !role;
 }
 
 function startQuiz() {
@@ -565,6 +566,7 @@ function resetQuiz() {
   document.getElementById('inp-empid').value = '';
   document.getElementById('inp-dept').selectedIndex = 0;
   document.getElementById('inp-role').selectedIndex = 0;
+  document.getElementById('inp-dept').selectedIndex = 0;
   document.getElementById('btn-start').disabled = true;
   const ring = document.getElementById('result-ring');
   ring.style.strokeDashoffset = '471';
