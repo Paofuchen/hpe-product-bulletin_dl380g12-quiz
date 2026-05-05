@@ -275,7 +275,7 @@
 // ═══════════════════════════════════════════════
 //  ★ 替換為你的 Google Apps Script Web App URL
 // ═══════════════════════════════════════════════
-const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYaF75dYikWARZuN5Iv63A49RUnWlif2AdX9zeXUyTDSBl7xPSEOHVWUV9kU0q61J5/exec";
 // ═══════════════════════════════════════════════
 
 // ───────────────────────────────────────────────
@@ -501,7 +501,7 @@ function showResult() {
   document.getElementById('r-correct').textContent = score;
   document.getElementById('r-wrong').textContent = 20 - score;
   document.getElementById('res-name-badge').textContent =
-    '👤 ' + studentName + (studentDept !== '未填寫' ? ' ／ ' + studentDept : '') + '　' + studentRole;
+    '👤 ' + studentName + '　' + studentEmpId + '　' + studentDept + '　' + studentRole;
 
   const ring = document.getElementById('result-ring');
   setTimeout(() => { ring.style.strokeDashoffset = 471 - (pct / 100) * 471; }, 100);
